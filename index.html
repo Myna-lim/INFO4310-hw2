@@ -14,17 +14,47 @@
                 margin: 50px;
                 background-color: rgb(186, 224, 237);
             }
+            .belly{
+                position: relative;
+                width: 1400px;
+            }
+            .belly-chart{
+                position: absolute;
+            }
+            .main-content{
+                display: flex;
+                flex-direction: row;
+            }
+            .left{
+                width: 500px;
+            }
         </style>
     </head>
 
     <body>
-        <h1> Popular Baby Names</h1>
-        <p> Myna Lim (ml2326) and Carly Hu (ch862)</p>
+        <div class = "main-content">
+            <div class = "left">
+                <h1> Popular Baby Names</h1>
+                <p> Myna Lim (ml2326) and Carly Hu (ch862)</p>
+            </div>
 
-        <img src="pregnant-candace.png" alt="pregnant candace" class="right-aligned"/>
+        <div class = "belly">
+            <img src="pregnant-candace.png" alt="pregnant candace" class="right-aligned"/>
+            <svg class = "belly-chart" id = "belly-chart" height = "550" width = "550" style = "margin-left: 250px; margin-top: 300px">
+            </svg>
+        </div>
+
         <script>
+            const svg = d3.select("#belly-chart");
+            const belly = svg.append("circle")
+                .attr("cx", 275)
+                .attr("cy", 275)   
+                .attr("r", 275)
+                .attr("fill","white")
+
 
         </script>
+        </div>
 
     </body>
 </html>
