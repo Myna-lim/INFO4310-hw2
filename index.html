@@ -40,19 +40,74 @@
 
         <div class = "belly">
             <img src="pregnant-candace.png" alt="pregnant candace" class="right-aligned"/>
-            <svg class = "belly-chart" id = "belly-chart" height = "550" width = "550" style = "margin-left: 250px; margin-top: 300px">
+            <svg class = "belly-chart" id = "belly-chart" height = "600" width = "600" style = "margin-left: 250px; margin-top: 280px">
             </svg>
         </div>
 
         <script>
             const svg = d3.select("#belly-chart");
-            const belly = svg.append("circle")
+            const Width = svg.attr("width");
+            const Height = svg.attr("height");
+            const belly = d3.select("#belly-chart").append("circle")
                 .attr("cx", 275)
                 .attr("cy", 275)   
                 .attr("r", 275)
-                .attr("fill","white")
+                .style("fill", "transparent")
+                .attr("stroke","white");
+
+            const requestData = async function() {
+                //let Layer = d3.select("#belly-chart").append("g");
+                //let Width = d3.select("#belly-chart").attr("width");
+                //let Height = d3.select("#belly-chart").attr("height");
 
 
+                const babies = await d3.csv('Popular_Baby_Names.csv');
+                var filteredYear = babies.filter(function(d) {
+                    return d["Year of Birth"] === "2011";
+                });
+                console.log(babies);
+
+                //scales
+                const genderScale = d3.scaleOrdinal().domain(["MALE","FEMALE"]).range(["#259dc3","#c61530"]);
+
+
+
+                //making data points
+                filteredYear.forEach( d => {
+                    d.x = d3.randomUniform(10,Width-10)();
+                    d.y = d3.randomUniform(10,Height-10)();
+                });
+
+                let circles = svg.selectAll("circle").data(filteredYear)
+                            .join("circle")
+                            .attr("r", d => d.Count/10)
+                            .attr("cx", d => d.x )
+                            .attr("cy", d => d.y )
+                            .attr("fill", d => genderScale( d.Gender ) );
+      
+                var babySimulation = d3.forceSimulation()
+                                  .nodes(filteredYear)
+                                  .force("ypos", d3.forceY()
+                                                   .strength( 0.08 )
+                                                   .y( Height/2.0 ) )
+                                  .force("xpos", d3.forceX()
+                                                   .strength( 0.08 )
+                                                   .x( Width/2.0) )
+                                  .force("collision", d3.forceCollide()
+                                                        .radius(6)
+                                                        .iterations(2) )
+                                  .on("tick", updateAllBabyPositions);
+      
+                //babySimulation.stop();
+                function updateAllBabyPositions() {
+                circles.attr("cx", d => d.x).attr("cy", d => d.y);
+                    }
+                babySimulation.restart();
+
+            
+
+            }
+            requestData();
         </script>
         </div>
 
