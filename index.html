@@ -48,12 +48,22 @@
             const svg = d3.select("#belly-chart");
             const Width = svg.attr("width");
             const Height = svg.attr("height");
-            const belly = d3.select("#belly-chart").append("circle")
-                .attr("cx", 275)
-                .attr("cy", 275)   
-                .attr("r", 275)
+            // const belly = d3.select("#belly-chart").append("circle")
+            //     .attr("cx", 275)
+            //     .attr("cy", 275)   
+            //     .attr("r", 275)
+            //     .style("fill", "transparent")
+            //     .attr("stroke","white");
+            const belly = svg.append("g") // Append a group element to the SVG
+                .attr("class", "belly")
+                .attr("transform", "translate(290, 285)"); // Translate to the center of the SVG
+
+            // Adding a circle to represent the belly
+            belly.append("circle")
+                .attr("r", 290)
                 .style("fill", "transparent")
-                .attr("stroke","white");
+                .attr("stroke", "blue");
+            
 
             const requestData = async function() {
                 //let Layer = d3.select("#belly-chart").append("g");
@@ -61,9 +71,9 @@
                 //let Height = d3.select("#belly-chart").attr("height");
 
 
-                const babies = await d3.csv('Popular_Baby_Names.csv');
+                const babies = await d3.csv('Preprocessed_Popular_Baby.csv');
                 var filteredYear = babies.filter(function(d) {
-                    return d["Year of Birth"] === "2011" &&  d["Rank"] < 10 ;
+                    return d["Year of Birth"] === "2011" &&  d["rank"] < 30 ;
             
                 });
                // console.log(babies);
@@ -74,35 +84,46 @@
 
                 //making data points
                 filteredYear.forEach( d => {
-                    d.x = d3.randomUniform(10,Width-10)();
-                    d.y = d3.randomUniform(10,Height-10)();
-                    console.log(d["Child's First Name"], d["Rank"])
+                    d.x = d3.randomUniform(10,Width-1500)();
+                    d.y = d3.randomUniform(10,Height-1500)();
+                    console.log(d["Child's First Name"], d["rank"])
                 });
 
-                let circles = svg.selectAll("circle").data(filteredYear)
-                            .join("circle")
-                            .attr("r", d => d.Count/10)
-                            .attr("cx", d => d.x )
-                            .attr("cy", d => d.y )
-                            .attr("opacity", 0.6)
-                            .attr("fill", d => genderScale( d.Gender ) )
+                // let circles = svg.selectAll("circle").data(filteredYear)
+                //             .join("circle")
+                //             .attr("xlink:href", "girl.png")
+                //             .attr("r", d => d.overall_count/1300)
+                //             .attr("cx", d => d.x )
+                //             .attr("cy", d => d.y )
+                //             .attr("opacity", 0.6)
+                //             .attr("fill", d => genderScale( d.Gender ) );
+
+                let images = belly.selectAll("image")
+                            .data(filteredYear)
+                            .join("image")
+                            .attr("xlink:href", d => d.Gender === "MALE" ? "boy.png" : "girl.png")
+                            .attr("width", d => d.overall_count / 700) // Adjust the width as needed
+                            .attr("height", d => d.overall_count / 700) // Adjust the height as needed
+                            .attr("x", d => d.x)
+                            .attr("y", d => d.y)
+                            .attr("opacity", 0.6);
       
                 var babySimulation = d3.forceSimulation()
                                   .nodes(filteredYear)
                                   .force("ypos", d3.forceY()
-                                                   .strength( 0.03 )
+                                                   .strength( 0.015 )
                                                    .y( Height/2.0 ) )
                                   .force("xpos", d3.forceX()
-                                                   .strength( 0.03 )
+                                                   .strength( 0.015 )
                                                    .x( Width/2.0) )
                                   .force("collision", d3.forceCollide()
-                                                        .radius(12)
+                                                        .radius(function(d){return d.overall_count/2000;})
                                                         .iterations(1) )
                                   .on("tick", updateAllBabyPositions);
       
                 babySimulation.stop();
                 function updateAllBabyPositions() {
-                circles.attr("cx", d => d.x).attr("cy", d => d.y);
+                    images.attr("x", d => d.x).attr("y", d => d.y);
                     }
                 babySimulation.restart();
 
@@ -110,16 +131,16 @@
                 // hover functionality
                 let label = svg.append("text").attr("visibility","hidden")         
 
-                circles.on("mouseover", function() {
+                images.on("mouseover", function() {
                     d3.select(this).attr("stroke", "white").attr("stroke-width", 3)
 
                     let name = d3.select(this).datum()["Child's First Name"]
                     let gender = d3.select(this).datum()["Gender"]
-                    let rank = d3.select(this).datum()["Rank"]
-                    let ethnicity = d3.select(this).datum()["Ethnicity"]
-                    let count = d3.select(this).datum()["Count"]
+                    let rank = d3.select(this).datum()["rank"]
+                    //let ethnicity = d3.select(this).datum()["Ethnicity"]
+                    let count = d3.select(this).datum()["overall_count"]
 
-                    let allInfo = "Name: " + name + "\nGender: "+ gender + "\nRank: "+ rank + "\nEthnicity: " + ethnicity + "\nCount" + count;
+                    let allInfo = "Name: " + name + "\nGender: "+ gender + "\nRank: "+ rank +  "\nCount: " + count;
                     // the \n thing is supposed to make a new line but it's not working so plz help 
 
                     label.text(allInfo) 
@@ -129,7 +150,7 @@
                         .style("font-weight", "bold")
                 });
 
-                circles.on("mouseout", function() {
+                images.on("mouseout", function() {
                     d3.select(this).attr("stroke", "")
                     label.text(""); 
                 });
