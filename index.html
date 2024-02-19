@@ -42,6 +42,7 @@
             <img src="pregnant-candace.png" alt="pregnant candace" class="right-aligned"/>
             <svg class = "belly-chart" id = "belly-chart" height = "600" width = "600" style = "margin-left: 250px; margin-top: 280px">
             </svg>
+      
         </div>
 
         <script>
@@ -62,7 +63,7 @@
             belly.append("circle")
                 .attr("r", 290)
                 .style("fill", "transparent")
-                .attr("stroke", "blue");
+                //.attr("stroke", "blue");
             
 
             const requestData = async function() {
@@ -73,7 +74,7 @@
 
                 const babies = await d3.csv('Preprocessed_Popular_Baby.csv');
                 var filteredYear = babies.filter(function(d) {
-                    return d["Year of Birth"] === "2011" &&  d["rank"] < 30 ;
+                    return d["Year of Birth"] === "2011" &&  d["rank"] < 40 ;
             
                 });
                // console.log(babies);
@@ -111,28 +112,31 @@
                 var babySimulation = d3.forceSimulation()
                                   .nodes(filteredYear)
                                   .force("ypos", d3.forceY()
-                                                   .strength( 0.015 )
+                                                   .strength( 0.0123 )
                                                    .y( Height/2.0 ) )
                                   .force("xpos", d3.forceX()
-                                                   .strength( 0.015 )
-                                                   .x( Width/2.0) )
+                                                   .strength( 0.0123 )
+                                                   .x( Width/2.0)  )
                                   .force("collision", d3.forceCollide()
                                                         .radius(function(d){return d.overall_count/2000;})
                                                         .iterations(1) )
                                   .on("tick", updateAllBabyPositions);
       
                 babySimulation.stop();
+
                 function updateAllBabyPositions() {
                     images.attr("x", d => d.x).attr("y", d => d.y);
                     }
+
                 babySimulation.restart();
 
-
                 // hover functionality
-                let label = svg.append("text").attr("visibility","hidden")         
+                let labelback= svg.append("rect").attr("visibility","hidden")    
+                let label = svg.append("text").attr("visibility","hidden")    
+               
 
                 images.on("mouseover", function() {
-                    d3.select(this).attr("stroke", "white").attr("stroke-width", 3)
+                    d3.select(this).attr("opacity", 1);
 
                     let name = d3.select(this).datum()["Child's First Name"]
                     let gender = d3.select(this).datum()["Gender"]
@@ -140,19 +144,28 @@
                     //let ethnicity = d3.select(this).datum()["Ethnicity"]
                     let count = d3.select(this).datum()["overall_count"]
 
-                    let allInfo = "Name: " + name + "\nGender: "+ gender + "\nRank: "+ rank +  "\nCount: " + count;
-                    // the \n thing is supposed to make a new line but it's not working so plz help 
+                    let allInfo = name 
+                    //+ "\nGender: "+ gender + "\nRank: "+ rank +  "\nCount: " + count;
 
                     label.text(allInfo) 
-                        .attr("x", 150) 
-                        .attr("y", 450) 
+                        .attr("x", d3.select(this).datum().x +200) 
+                        .attr("y", (d3.select(this).datum().y + 310)) 
                         .attr("visibility", "visible")
                         .style("font-weight", "bold")
+
+                    labelback.style("fill","white")
+                        .attr("width", 120)
+                        .attr("height", 100)
+                        .attr("visibility","visible")
+                        .attr("x", d3.select(this).datum().x + 190) 
+                        .attr("y", (d3.select(this).datum().y + 290)) 
+                        .style("stroke", "black")
                 });
 
                 images.on("mouseout", function() {
-                    d3.select(this).attr("stroke", "")
+                    d3.select(this).attr("opacity","0.6")
                     label.text(""); 
+                    labelback.style("fill","none").style("stroke", "none")
                 });
 
             
