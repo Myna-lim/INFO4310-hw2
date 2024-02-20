@@ -84,15 +84,15 @@
 
 
                 const babies = await d3.csv('Preprocessed_Popular_Baby.csv');
-                babies.forEach(function(d) {
-                d["Year of Birth"] = parseInt(d["Year of Birth"]); 
-                d["ASIAN AND PACIFIC ISLANDER"] = parseInt(d["ASIAN AND PACIFIC ISLANDER"]); 
-                d["BLACK NON HISPANIC"] = parseInt(d["BLACK NON HISPANIC"]); 
-                d["HISPANIC"] = parseInt(d["HISPANIC"]); 
-                d["WHITE NON HISPANIC"] = parseInt(d["WHITE NON HISPANIC"]); 
-                d["overall_count"] = parseInt(d["overall_count"]); 
-                d["rank"] = parseFloat(d["rank"]);
-                });
+                // babies.forEach(function(d) {
+                // d["Year of Birth"] = parseInt(d["Year of Birth"]); 
+                // d["ASIAN AND PACIFIC ISLANDER"] = parseInt(d["ASIAN AND PACIFIC ISLANDER"]); 
+                // d["BLACK NON HISPANIC"] = parseInt(d["BLACK NON HISPANIC"]); 
+                // d["HISPANIC"] = parseInt(d["HISPANIC"]); 
+                // d["WHITE NON HISPANIC"] = parseInt(d["WHITE NON HISPANIC"]); 
+                // d["overall_count"] = parseInt(d["overall_count"]); 
+                // d["rank"] = parseFloat(d["rank"]);
+                // });
                 var filteredYear = babies.filter(function(d) {
                     return d["Year of Birth"] === "2011" &&  d["rank"] < 40 ;
             
