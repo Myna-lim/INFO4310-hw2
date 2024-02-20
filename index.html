@@ -29,14 +29,15 @@
                 width: 500px;
             }
             .ranking{
-                margin-top: 50;
+                margin-top: 100px;
                 margin-right: 500px;
-                width: 380px;
-                height: 80px;
-                /* flex-direction: row; */
-                /* display: flex; */
-                /* justify-content: center; */
+                width: 350px;
+                padding: 20px;
+                padding-inline: 20px;
+                /* justify-content: space-between;  */
+                /* display: flex;  */ 
             }
+
         </style>
     </head>
 
@@ -45,16 +46,16 @@
             <div class = "left">
                 <h1> Popular Baby Names</h1>
                 <p> Myna Lim (ml2326) and Carly Hu (ch862)</p>
+                <div id = "ranking" class = "ranking" style="background-color: white; border: 2px solid black; "></div>
             </div>
 
         <div class = "belly">
             <img src="pregnant-candace.png" alt="pregnant candace" class="right-aligned"/>
-            <svg class = "belly-chart" id = "belly-chart" height = "600" width = "600" style = "margin-left: 250px; margin-top: 280px">
-            </svg>
-            <div class = "ranking" style="border: 2px solid #7a0177; padding-top: 200px; "></div>
-            
+            <svg class = "belly-chart" id = "belly-chart" height = "600" width = "600" style = "margin-left: 120px; margin-top: 280px;"></svg>            
       
         </div>
+
+    </div>
 
         <script>
             const svg = d3.select("#belly-chart");
@@ -189,43 +190,55 @@
                 });
 
 
-                ranking(babies, 2011);
+                // RANKING TABLE
+                ranking(babies, 2011, "MALE", "lightblue");
+                ranking(babies, 2011, "FEMALE", "lightpink");
 
-                function ranking(data, year) {
+
+                function ranking(data, year, gender, color) {
 
                     const rank = d3.select("#ranking");
 
-                    rank.selectAll("table").remove();
-                    console.log(data);
                     var filteredData = data.filter(function(d) {
-                            return d['Year of Birth'] === 2011;
-                        }).filter(function(d) {
-                            return d['overall_count'] % 5 <= 1;
-                        });                  
-                    const table = rank.append("table"); // table for information
-                    table.append("caption").text(`Top 5 Babies in ${year}`).style("font-weight", 600).style("font-size", "large"); // title
+                            return d['Year of Birth'] === "2011" && d['rank']<= 5;
+                        });          
+                    filteredData = filteredData.slice().sort((a, b) => b["overall_count"] - a["overall_count"]); // sorting data for the category chosen
+                  
+                    const table = rank.append("table")
+
+                    table.append("caption").text(`Top 5 ${gender} Baby Names in ${year}`)
+                                            .style("font-weight", 600)
+                                            .style("font-size", "large") // title
+                                            
+    
                     const tableTitle = table.append("thead");  // creating table title
                     tableTitle.append("th")
                         .selectAll("th")
-                        .data(["State", year])
+                        .data(["Name", "Rank", "Count"])
                         .enter()
                         .append("th")
-                        .text(d => d);
+                        .text(d => d)
 
-                    
                     // creating table rows
                     const tableMain = table.append("tbody");
                     const rows = tableMain.selectAll("tr")
-                                    .data(babies)
+                                    .data(filteredData)
                                     .enter()
                                     .append("tr");
-
-                    
-                    // filling in the table data
+                                    
                     rows.each(function (d) {
-                    const row = d3.select(this);
-                    row.append("td").text(d.State);
-                    row.append("td").text(d[year].toFixed(2));
+                        if(d["Gender"]===gender){
+                            const row = d3.select(this);
+                            row.append("td")
+                            .selectAll("td")
+                            .data([d["Child's First Name"], d["rank"], d["overall_count"]])
+                            .enter()
+                            .append("td")
+                            .text(d => d)
+                         
+                        }
+                        
+                    
                     });
 
 
@@ -236,7 +249,6 @@
             }
             requestData();
         </script>
-        </div>
 
     </body>
 </html>
