@@ -28,6 +28,15 @@
             .left{
                 width: 500px;
             }
+            .ranking{
+                margin-top: 50;
+                margin-right: 500px;
+                width: 380px;
+                height: 80px;
+                /* flex-direction: row; */
+                /* display: flex; */
+                /* justify-content: center; */
+            }
         </style>
     </head>
 
@@ -42,6 +51,8 @@
             <img src="pregnant-candace.png" alt="pregnant candace" class="right-aligned"/>
             <svg class = "belly-chart" id = "belly-chart" height = "600" width = "600" style = "margin-left: 250px; margin-top: 280px">
             </svg>
+            <div class = "ranking" style="border: 2px solid #7a0177; padding-top: 200px; "></div>
+            
       
         </div>
 
@@ -73,6 +84,15 @@
 
 
                 const babies = await d3.csv('Preprocessed_Popular_Baby.csv');
+                babies.forEach(function(d) {
+                d["Year of Birth"] = parseInt(d["Year of Birth"]); 
+                d["ASIAN AND PACIFIC ISLANDER"] = parseInt(d["ASIAN AND PACIFIC ISLANDER"]); 
+                d["BLACK NON HISPANIC"] = parseInt(d["BLACK NON HISPANIC"]); 
+                d["HISPANIC"] = parseInt(d["HISPANIC"]); 
+                d["WHITE NON HISPANIC"] = parseInt(d["WHITE NON HISPANIC"]); 
+                d["overall_count"] = parseInt(d["overall_count"]); 
+                d["rank"] = parseFloat(d["rank"]);
+                });
                 var filteredYear = babies.filter(function(d) {
                     return d["Year of Birth"] === "2011" &&  d["rank"] < 40 ;
             
@@ -168,7 +188,50 @@
                     labelback.style("fill","none").style("stroke", "none")
                 });
 
-            
+
+                ranking(babies, 2011);
+
+                function ranking(data, year) {
+
+                    const rank = d3.select("#ranking");
+
+                    rank.selectAll("table").remove();
+                    console.log(data);
+                    var filteredData = data.filter(function(d) {
+                            return d['Year of Birth'] === 2011;
+                        }).filter(function(d) {
+                            return d['overall_count'] % 5 <= 1;
+                        });                  
+                    const table = rank.append("table"); // table for information
+                    table.append("caption").text(`Top 5 Babies in ${year}`).style("font-weight", 600).style("font-size", "large"); // title
+                    const tableTitle = table.append("thead");  // creating table title
+                    tableTitle.append("th")
+                        .selectAll("th")
+                        .data(["State", year])
+                        .enter()
+                        .append("th")
+                        .text(d => d);
+
+                    
+                    // creating table rows
+                    const tableMain = table.append("tbody");
+                    const rows = tableMain.selectAll("tr")
+                                    .data(babies)
+                                    .enter()
+                                    .append("tr");
+
+                    
+                    // filling in the table data
+                    rows.each(function (d) {
+                    const row = d3.select(this);
+                    row.append("td").text(d.State);
+                    row.append("td").text(d[year].toFixed(2));
+                    });
+
+
+
+
+                }
 
             }
             requestData();
