@@ -10,7 +10,7 @@
                 width: 800px;
             }
             body{
-                font-family:Helvetica, sans-serif;
+                font-family: 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', sans-serif;
                 margin: 50px;
                 background-color: rgb(186, 224, 237);
             }
@@ -160,26 +160,27 @@
                     d3.select(this).attr("opacity", 1);
 
                     let name = d3.select(this).datum()["Child's First Name"]
-                    let gender = d3.select(this).datum()["Gender"]
-                    let rank = d3.select(this).datum()["rank"]
+                    let rank = "#" + Math.round(d3.select(this).datum()["rank"])
                     //let ethnicity = d3.select(this).datum()["Ethnicity"]
-                    let count = d3.select(this).datum()["overall_count"]
+                    let count = "("+d3.select(this).datum()["overall_count"]+")"
 
-                    let allInfo = name 
-                    //+ "\nGender: "+ gender + "\nRank: "+ rank +  "\nCount: " + count;
+                    let allInfo = name + ": Rank " + rank + " "+ count
 
                     label.text(allInfo) 
-                        .attr("x", d3.select(this).datum().x +200) 
-                        .attr("y", (d3.select(this).datum().y + 310)) 
+                        .attr("x", d3.select(this).datum().x +235) 
+                        .attr("y", (d3.select(this).datum().y + 370)) 
                         .attr("visibility", "visible")
                         .style("font-weight", "bold")
+                        .style("background-color", "white")
+
+                    labelWidth = d3.select(this).datum()["Child's First Name"].length 
 
                     labelback.style("fill","white")
-                        .attr("width", 120)
-                        .attr("height", 100)
+                        .attr("width", labelWidth + 250)
+                        .attr("height", 30)
                         .attr("visibility","visible")
-                        .attr("x", d3.select(this).datum().x + 190) 
-                        .attr("y", (d3.select(this).datum().y + 290)) 
+                        .attr("x", d3.select(this).datum().x + 230) 
+                        .attr("y", (d3.select(this).datum().y + 350)) 
                         .style("stroke", "black")
                 });
 
@@ -218,6 +219,7 @@
                         .enter()
                         .append("th")
                         .text(d => d)
+                        .style("padding-inline", "35px")
 
                     // creating table rows
                     const tableMain = table.append("tbody");
@@ -225,7 +227,7 @@
                                     .data(filteredData)
                                     .enter()
                                     .append("tr");
-                                    
+
                     rows.each(function (d) {
                         if(d["Gender"]===gender){
                             const row = d3.select(this);
