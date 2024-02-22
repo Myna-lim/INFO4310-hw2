@@ -141,7 +141,8 @@
                 //             .attr("cy", d => d.y )
                 //             .attr("opacity", 0.6)
                 //             .attr("fill", d => genderScale( d.Gender ) );
-
+                updateGraph(babies, "2011");
+                
                 function updateGraph(d, year){
                     
                     var filteredYear = babies.filter(function(d) {
@@ -305,12 +306,13 @@
                     .on("mouseout", function() {
                         d3.select(this).style("cursor", "default");
                     })
-                
+            
+                                
                     d3.select(`button#Total`).style("background-color", "#fcc5c0").style("text-decoration", "underline");
                     
                 });
 
-                updateGraph(babies, "2011");
+                
             }
             requestData();
         </script>
