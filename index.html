@@ -81,7 +81,6 @@
                     <div id="button-bar" class="button-bar"></div>
                  </div>    
                 <div id = "ranking" class = "ranking" style="background-color: white; border: 2px solid black; "></div>
-                <p> Source: <a href = "https://data.cityofnewyork.us/Health/Popular-Baby-Names/25th-nujf/about_data"> NYC OpenData </a></p>
             </div>
 
         <div class = "belly">
@@ -163,6 +162,18 @@
                         // Assign a different value if the condition is not met
                         variable = 700;
                     }
+
+                    const drag = d3.drag()
+                                    .on("drag", function(event, d) {
+                                        d.x = event.x;
+                                        d.y = event.y;
+                                        
+                                        d3.select(this)
+                                            .raise()
+                                            .attr("x", d.x)
+                                            .attr("y", d.y);
+                    });
+
                     let images = belly.selectAll("image")
                                 .data(filteredYear)
                                 .join("image")
@@ -171,7 +182,22 @@
                                 .attr("height", d => (d.overall_count/variable)) // Adjust the height as needed
                                 .attr("x", d => d.x)
                                 .attr("y", d => d.y)
-                                .attr("opacity", 0.6);
+                                .attr("opacity", 0.6)
+                                .call(drag)
+                                .on("click", clicked);
+
+
+                    function clicked(event, d) {
+                        if (event.defaultPrevented) return;
+
+                        d3.select(this).transition()
+                            .attr("fill", "black")
+                            .attr("r", radius * 2)
+                        .transition()
+                            .attr("r", radius)
+                            .attr("fill", d3.schemeCategory10[d.index % 10]);
+                    }
+                
         
                     var babySimulation = d3.forceSimulation()
                                     .nodes(filteredYear)
@@ -244,8 +270,9 @@
 
 
                     // RANKING TABLE
-                    ranking(babies, year, "MALE", "lightblue");
                     ranking(babies, year, "FEMALE", "lightpink");
+                    ranking(babies, year, "MALE", "lightblue");
+
 
             }
 
@@ -253,7 +280,7 @@
                 function ranking(data, year, gender, color) {
 
                     const rank = d3.select("#ranking");
-                    if (gender === "MALE"){
+                    if (gender === "FEMALE"){
                     rank.selectAll("table").remove();}
 
                     var filteredData = data.filter(function(d) {
