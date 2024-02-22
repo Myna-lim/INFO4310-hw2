@@ -4,6 +4,7 @@
         <script src="https://d3js.org/d3.v7.min.js"></script>
         <script src="https://d3js.org/topojson.v3.min.js"></script>
         <style>
+
             .right-aligned {
                 float: right;
                 margin-left: 20px;
@@ -12,7 +13,8 @@
             body{
                 font-family: 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', sans-serif;
                 margin: 50px;
-                background-color: rgb(186, 224, 237);
+                /* background-color: rgb(186, 224, 237); */
+                background-image: url("phineas.jpeg");
             }
             .belly{
                 position: relative;
@@ -31,11 +33,10 @@
             .ranking{
                 margin-top: 20px;
                 margin-right: 500px;
-                width: 350px;
+                width: 320px;
                 padding: 20px;
                 padding-inline: 20px;
-                /* justify-content: space-between;  */
-                /* display: flex;  */ 
+                border-radius: 10%;
             }
 
             .button-bar{
@@ -43,23 +44,29 @@
                 padding-bottom: 15px;
                 padding-left: 0px;
                 padding-right: 25px;
+                display: flex;
+                width: 400px;
+                flex-wrap: wrap;
+
             }
             .category{
                 margin: 2.5px;
             }
 
             button {
-                font-family: "Trebuchet MS", sans-serif;
+                font-family:'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', sans-serif;
                 background-color: white;
-                color: #445;
-                border: 1px solid gray;
-                padding: 10px;
-                padding-left: 20px;
-                padding-right: 20px;
+                color: black;
+                border: 2px solid black;
+                padding: 12px;
                 font-size: large;
-                border-style: ridge;
+                border-radius: 20%;
             }            
 
+            .table{
+                width: 100%;
+               
+            }
         </style>
     </head>
 
@@ -69,7 +76,7 @@
         <div class = "main-content">
             <div class = "left">
                 <div id="family">              
-                    <h3 id="maptitle">Filter by family size (# parents, # children): </h3>
+                    <h3 id="maptitle">Filter by year: </h3>
                     <div id="family-button-bar"></div>
                     <div id="button-bar" class="button-bar"></div>
                  </div>    
@@ -89,12 +96,7 @@
             const svg = d3.select("#belly-chart");
             const Width = svg.attr("width");
             const Height = svg.attr("height");
-            // const belly = d3.select("#belly-chart").append("circle")
-            //     .attr("cx", 275)
-            //     .attr("cy", 275)   
-            //     .attr("r", 275)
-            //     .style("fill", "transparent")
-            //     .attr("stroke","white");
+           
             const belly = svg.append("g") // Append a group element to the SVG
                 .attr("class", "belly")
                 .attr("transform", "translate(290, 285)"); // Translate to the center of the SVG
@@ -141,6 +143,7 @@
                 //             .attr("fill", d => genderScale( d.Gender ) );
 
                 function updateGraph(d, year){
+                    
                     var filteredYear = babies.filter(function(d) {
                         return d["Year of Birth"] === year &&  d["rank"] < 40 ;
                 
@@ -205,8 +208,15 @@
 
                         let allInfo = name + ": Rank " + rank + " "+ count
 
+                        console.log(d3.select(this).datum().x)
+                        if (d3.select(this).datum().x > 0){
+                            side = d3.select(this).datum().x +160
+                        } else {
+                            side = d3.select(this).datum().x +300
+
+                        }
                         label.text(allInfo) 
-                            .attr("x", d3.select(this).datum().x +235) 
+                            .attr("x", side) 
                             .attr("y", (d3.select(this).datum().y + 370)) 
                             .attr("visibility", "visible")
                             .style("font-weight", "bold")
@@ -218,7 +228,7 @@
                             .attr("width", labelWidth + 250)
                             .attr("height", 30)
                             .attr("visibility","visible")
-                            .attr("x", d3.select(this).datum().x + 230) 
+                            .attr("x", side - 10) 
                             .attr("y", (d3.select(this).datum().y + 350)) 
                             .style("stroke", "black")
                     });
@@ -248,23 +258,12 @@
                         });          
                     filteredData = filteredData.slice().sort((a, b) => b["overall_count"] - a["overall_count"]); // sorting data for the category chosen
                   
-                    const table = rank.append("table")
+                    const table = rank.append("table").attr("class","table")
 
                     table.append("caption").text(`Top 5 ${gender} Baby Names in ${year}`)
                                             .style("font-weight", 600)
                                             .style("font-size", "large") // title
-                                            
-    
-                    const tableTitle = table.append("thead");  // creating table title
-                    tableTitle.append("th")
-                        .selectAll("th")
-                        .data(["Name", "Rank", "Count"])
-                        .enter()
-                        .append("th")
-                        .text(d => d)
-                        .style("padding-inline", "35px")
-
-                    // creating table rows
+                                                                
                     const tableMain = table.append("tbody");
                     const rows = tableMain.selectAll("tr")
                                     .data(filteredData)
@@ -274,16 +273,12 @@
                     rows.each(function (d) {
                         if(d["Gender"]===gender){
                             const row = d3.select(this);
-                            row.append("td")
-                            .selectAll("td")
-                            .data([d["Child's First Name"], d["rank"], d["overall_count"]])
-                            .enter()
-                            .append("td")
-                            .text(d => d)
-                         
+                            row.attr("width", "100px")
+                            row.append("td").text(d["rank"][0])
+                            row.append("td").text(d["Child's First Name"]);
+                            row.append("td").text(d["overall_count"]);
+
                         }
-                        
-                    
                     });
                 }
 
@@ -297,10 +292,9 @@
                     .text(d)
                     .on("click", function () {
                         d3.selectAll("button.category").style('background-color', "white").style("text-decoration", "none");
-                        d3.select(this).style("background-color", "#fcc5c0").style("text-decoration", "underline");
+                        d3.select(this).style("background-color", "#CBC3E3").style("text-weight", "bold");
                         category = d;
                         updateGraph(babies, d);
-                        //updateBarChart();
 
                     })
                     .on("mouseover", function() {
