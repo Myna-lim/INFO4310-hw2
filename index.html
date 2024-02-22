@@ -231,6 +231,8 @@
                             .attr("x", side - 10) 
                             .attr("y", (d3.select(this).datum().y + 350)) 
                             .style("stroke", "black")
+                            .style("stroke-width", "2")
+                            .style("rx", "10")
                     });
 
                     images.on("mouseout", function() {
