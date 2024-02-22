@@ -141,7 +141,6 @@
                 //             .attr("cy", d => d.y )
                 //             .attr("opacity", 0.6)
                 //             .attr("fill", d => genderScale( d.Gender ) );
-                updateGraph(babies, "2011");
                 
                 function updateGraph(d, year){
                     
@@ -312,7 +311,8 @@
                     
                 });
 
-                
+                updateGraph(babies, "2011");
+
             }
             requestData();
         </script>
