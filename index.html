@@ -90,21 +90,23 @@
     </div>
 
         <script>
+            // creating svg
             const svg = d3.select("#belly-chart");
             const Width = svg.attr("width");
             const Height = svg.attr("height");
            
-            const belly = svg.append("g") // Append a group element to the SVG
+            const belly = svg.append("g") 
                 .attr("class", "belly")
-                .attr("transform", "translate(290, 285)"); // Translate to the center of the SVG
+                .attr("transform", "translate(290, 285)"); 
 
             const requestData = async function() {
 
                 const babies = await d3.csv('Preprocessed_Popular_Baby.csv');
 
-                //scales
+                // scales
                 const genderScale = d3.scaleOrdinal().domain(["MALE","FEMALE"]).range(["#259dc3","#f25a9e"]);
 
+                // function to update visualization based on selected year 
                 function updateGraph(d, year){
                     
                     var filteredYear = babies.filter(function(d) {
@@ -124,6 +126,7 @@
                         variable = 700;
                     }
 
+                    // drag functionality
                     const drag = d3.drag()
                                     .on("drag", function(event, d) {
                                         d.x = event.x;
@@ -134,7 +137,7 @@
                                             .attr("x", d.x)
                                             .attr("y", d.y);
                     });
-
+                    // populating w/ images
                     let images = belly.selectAll("image")
                                 .data(filteredYear)
                                 .join("image")
@@ -158,7 +161,7 @@
                             .attr("r", radius)
                             .attr("fill", d3.schemeCategory10[d.index % 10]);
                     }
-                
+                    // animated collision!
                     var babySimulation = d3.forceSimulation()
                                     .nodes(filteredYear)
                                     .force("ypos", d3.forceY()
@@ -225,14 +228,13 @@
                         d3.select(this).attr("opacity","0.6")
                         label.text(""); 
                         labelback.style("fill","none").style("stroke", "none")
-                    });
-
-
-                    // RANKING TABLE
+                    });       
                     ranking(babies, year, "FEMALE", "lightpink");
                     ranking(babies, year, "MALE", "lightblue");
-
             }
+
+             // RANKING TABLE
+           
 
                 function ranking(data, year, gender, color) {
 
@@ -268,7 +270,7 @@
                         }
                     });
                 }
-
+                // button bar
                 const yearCategories = ["2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019"];
                 yearCategories.forEach(d => {
 
