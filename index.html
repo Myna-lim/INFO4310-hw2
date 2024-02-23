@@ -13,7 +13,6 @@
             body{
                 font-family: 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', sans-serif;
                 margin: 50px;
-                /* background-color: rgb(186, 224, 237); */
                 background-image: url("phineas.jpeg");
             }
             .belly{
@@ -65,14 +64,13 @@
 
             .table{
                 width: 100%;
-               
             }
         </style>
     </head>
 
     <body>
-                        <h1> Popular Baby Names</h1>
-                <p> Myna Lim (ml2326) and Carly Hu (ch862)</p>
+            <h1> Popular Baby Names</h1>
+            <p> Myna Lim (ml2326) and Carly Hu (ch862)</p>
         <div class = "main-content">
             <div class = "left">
                 <div id="family">              
@@ -81,13 +79,12 @@
                     <div id="button-bar" class="button-bar"></div>
                  </div>    
                 <div id = "ranking" class = "ranking" style="background-color: white; border: 2px solid black; "></div>
+                <p> Source: <a href="https://data.cityofnewyork.us/Health/Popular-Baby-Names/25th-nujf/about_data">NYC OpenData</a></p>
             </div>
 
         <div class = "belly">
             <img src="pregnant-candace.png" alt="pregnant candace" class="right-aligned"/>
             <svg class = "belly-chart" id = "belly-chart" height = "600" width = "600" style = "margin-left: 120px; margin-top: 280px;"></svg>            
-      
-
         </div>
 
     </div>
@@ -101,47 +98,13 @@
                 .attr("class", "belly")
                 .attr("transform", "translate(290, 285)"); // Translate to the center of the SVG
 
-            // Adding a circle to represent the belly
-            belly.append("circle")
-                .attr("r", 290)
-                .style("fill", "transparent")
-                //.attr("stroke", "blue");
-            
-
             const requestData = async function() {
-                //let Layer = d3.select("#belly-chart").append("g");
-                //let Width = d3.select("#belly-chart").attr("width");
-                //let Height = d3.select("#belly-chart").attr("height");
-
 
                 const babies = await d3.csv('Preprocessed_Popular_Baby.csv');
-                // babies.forEach(function(d) {
-                // d["Year of Birth"] = parseInt(d["Year of Birth"]); 
-                // d["ASIAN AND PACIFIC ISLANDER"] = parseInt(d["ASIAN AND PACIFIC ISLANDER"]); 
-                // d["BLACK NON HISPANIC"] = parseInt(d["BLACK NON HISPANIC"]); 
-                // d["HISPANIC"] = parseInt(d["HISPANIC"]); 
-                // d["WHITE NON HISPANIC"] = parseInt(d["WHITE NON HISPANIC"]); 
-                // d["overall_count"] = parseInt(d["overall_count"]); 
-                // d["rank"] = parseFloat(d["rank"]);
-                // });
-
-               // console.log(babies);
 
                 //scales
                 const genderScale = d3.scaleOrdinal().domain(["MALE","FEMALE"]).range(["#259dc3","#f25a9e"]);
 
-
-                //making data points
-
-                // let circles = svg.selectAll("circle").data(filteredYear)
-                //             .join("circle")
-                //             .attr("xlink:href", "girl.png")
-                //             .attr("r", d => d.overall_count/1300)
-                //             .attr("cx", d => d.x )
-                //             .attr("cy", d => d.y )
-                //             .attr("opacity", 0.6)
-                //             .attr("fill", d => genderScale( d.Gender ) );
-                
                 function updateGraph(d, year){
                     
                     var filteredYear = babies.filter(function(d) {
@@ -156,10 +119,8 @@
                     });
 
                     if (["2015", "2016", "2017", "2018", "2019"].includes(year)) {
-                        // Assign the variable based on the condition
                          variable = 18;
                     } else {
-                        // Assign a different value if the condition is not met
                         variable = 700;
                     }
 
@@ -178,8 +139,8 @@
                                 .data(filteredYear)
                                 .join("image")
                                 .attr("xlink:href", d => d.Gender === "MALE" ? "boy.png" : "girl.png")
-                                .attr("width", d => (d.overall_count/variable)) // Adjust the width as needed
-                                .attr("height", d => (d.overall_count/variable)) // Adjust the height as needed
+                                .attr("width", d => (d.overall_count/variable))
+                                .attr("height", d => (d.overall_count/variable))
                                 .attr("x", d => d.x)
                                 .attr("y", d => d.y)
                                 .attr("opacity", 0.6)
@@ -198,7 +159,6 @@
                             .attr("fill", d3.schemeCategory10[d.index % 10]);
                     }
                 
-        
                     var babySimulation = d3.forceSimulation()
                                     .nodes(filteredYear)
                                     .force("ypos", d3.forceY()
@@ -230,7 +190,6 @@
 
                         let name = d3.select(this).datum()["Child's First Name"]
                         let rank = "#" + Math.round(d3.select(this).datum()["rank"])
-                        //let ethnicity = d3.select(this).datum()["Ethnicity"]
                         let count = "("+d3.select(this).datum()["overall_count"]+")"
 
                         let allInfo = name + ": Rank " + rank + " "+ count
@@ -273,9 +232,7 @@
                     ranking(babies, year, "FEMALE", "lightpink");
                     ranking(babies, year, "MALE", "lightblue");
 
-
             }
-
 
                 function ranking(data, year, gender, color) {
 
